@@ -1,0 +1,13 @@
+FROM ubuntu:precise
+MAINTAINER rgan
+RUN apt-get update && apt-get upgrade -y && apt-get install -y curl apache2 libapache2-mod-php5
+EXPOSE 22 80
+ADD app.tar.gz /tmp/app.tar.gz
+ADD testapp /etc/apache2/sites-available/{{ config.site_name }}
+RUN a2ensite {{ config.site_name }}
+RUN a2dissite default
+RUN a2enmod rewrite
+RUN (mkdir -p {{ config.app_root }}/log && cd {{ config.app_root }} && tar -zxf /tmp/app.tar.gz && chown -R www-data {{ config.app_root }})
+RUN (cd {{ config.app_root }} && curl -sS https://getcomposer.org/installer | php)
+RUN (cd {{ config.app_root }} && php composer.phar update)
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]

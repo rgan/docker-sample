@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+    ServerName {{ config.server_name }}
+
+    DocumentRoot {{ config.app_root }}/www
+
+    <Directory {{ config.app_root }}/www>
+        AllowOverride All
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ErrorLog {{ config.app_root }}/log/error.log
+    CustomLog {{ config.app_root }}/log/access.log combined
+
+</VirtualHost>
